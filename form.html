@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agroplataforma - Lead Generation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: rgba(249, 250, 251, var(--tw-bg-opacity));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .industry-select {
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 Agroplataforma MX</h1>
+            <p>Generador de Leads para Agroindustria</p>
+        </div>
+
+        <form id="leadForm">
+            <div class="form-group">
+                <label for="job_title">🎯 Puesto / Cargo</label>
+                <input 
+                    type="text" 
+                    id="job_title" 
+                    name="job_title" 
+                    placeholder="Ej: CEO, Director, Fundador, Gerente General"
+                    required
+                >
+                <div class="hint">Título del puesto que estás buscando</div>
+            </div>
+
+            <div class="form-group">
+                <label for="location">📍 Ubicación</label>
+                <input 
+                    type="text" 
+                    id="location" 
+                    name="location" 
+                    placeholder="Ej: Mexico City, Mexico o Jalisco, Mexico"
+                    required
+                >
+                <div class="hint">Ciudad, Estado o País</div>
+            </div>
+
+            <div class="form-group">
+                <label for="industry">🏭 Industria</label>
+                <select id="industry" name="industry" class="industry-select" required>
+                    <option value="">Selecciona una industria...</option>
+                    <option value="5567cd4273696439b10b23b6">🌾 Agricultura</option>
+                    <option value="5567cd4273696439b10b23b7">🚜 Farming</option>
+                    <option value="5567cd4273696439b10b23ba">🍔 Alimentos y Bebidas</option>
+                    <option value="5567cd4273696439b10b23bb">🏭 Producción de Alimentos</option>
+                    <option value="5567cd4273696439b10b2448">🐄 Ganadería (Ranching)</option>
+                    <option value="agribusiness">🌱 Agronegocios</option>
+                    <option value="agtech">💻 AgTech</option>
+                    <option value="export">🌎 Exportación</option>
+                </select>
+                <div class="hint">Sector de la empresa objetivo</div>
+            </div>
+
+            <div class="form-group">
+                <label for="sequence_name">📧 Nombre de la Campaña</label>
+                <input 
+                    type="text" 
+                    id="sequence_name" 
+                    name="sequence_name" 
+                    placeholder="Ej: Outreach Agroplataforma Q1 2024"
+                    required
+                >
+                <div class="hint">Nombre descriptivo para identificar esta campaña</div>
+            </div>
+
+            <div class="form-group">
+                <label for="sequence_id">🔑 Sequence ID de Apollo</label>
+                <input 
+                    type="text" 
+                    id="sequence_id" 
+                    name="sequence_id" 
+                    placeholder="Ej: 67890abcdef12345"
+                    required
+                >
+                <div class="hint">Lo encuentras en la URL de tu secuencia en Apollo</div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                🚀 Iniciar Búsqueda de Leads
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #667eea; font-weight: 600;">
+                Buscando leads...
+            </p>
+        </div>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // ⚠️ IMPORTANTE: Reemplaza esta URL por tu URL de webhook de N8N
+        const WEBHOOK_URL = 'https://TU_INSTANCIA_N8N.com/webhook/lead-generation';
+
+        const form = document.getElementById('leadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Deshabilitar botón y mostrar loading
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            // Recopilar datos del formulario
+            const formData = {
+                job_title: document.getElementById('job_title').value,
+                location: document.getElementById('location').value,
+                industry: document.getElementById('industry').value,
+                sequence_name: document.getElementById('sequence_name').value,
+                sequence_id: document.getElementById('sequence_id').value
+            };
+
+            try {
+                // Enviar POST al webhook de N8N
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                // Mostrar resultado exitoso
+                result.className = 'result success';
+                result.style.display = 'block';
+                result.innerHTML = `
+                    <h3 style="margin-bottom: 10px;">✅ ¡Búsqueda Iniciada!</h3>
+                    <p><strong>Puesto:</strong> ${data.criteria?.job_title}</p>
+                    <p><strong>Ubicación:</strong> ${data.criteria?.location}</p>
+                    <p><strong>Secuencia:</strong> ${data.criteria?.sequence_name}</p>
+                    <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                        Los leads calificados aparecerán en tu Apollo y Google Sheets en unos minutos.
+                    </p>
+                `;
+
+                // Resetear formulario
+                form.reset();
+
+            } catch (error) {
+                // Mostrar error
+                result.className = 'result error';
+                result.style.display = 'block';
+                result.innerHTML = `
+                    <h3 style="margin-bottom: 10px;">❌ Error</h3>
+                    <p>${error.message || 'No se pudo iniciar la búsqueda. Verifica la URL del webhook.'}</p>
+                `;
+            } finally {
+                // Re-habilitar botón y ocultar loading
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+
+        // Autocompletar sequence_id cuando se pega una URL de Apollo
+        document.getElementById('sequence_id').addEventListener('paste', (e) => {
+            setTimeout(() => {
+                const pastedText = e.target.value;
+                // Si pegan una URL, extraer el ID
+                const match = pastedText.match(/sequences\/([a-zA-Z0-9]+)/);
+                if (match) {
+                    e.target.value = match[1];
+                }
+            }, 10);
+        });
+    </script>
+</body>
+</html>
