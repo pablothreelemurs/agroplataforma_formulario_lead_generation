@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>AgroBroker Analytics - Dashboard de Leads</title>
+    <meta name="description"
+        content="Dashboard profesional de analítica de leads para AgroBroker. Visualiza métricas clave, conversión, scoring y seguimiento de oportunidades comerciales en el sector agroindustrial.">
+    <meta name="keywords" content="AgroBroker, analytics, leads, agroindustria, dashboard, métricas">
+    <meta name="author" content="AgroBroker">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="AgroBroker Analytics Dashboard">
+    <meta property="og:description" content="Dashboard de analítica de leads para el sector agroindustrial">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&family=Montserrat:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header" id="dashboardHeader">
+        <div class="header-left">
+            <button class="header-btn" id="sidebarToggle" aria-label="Toggle Filters">
+                <span>🔍</span>
+                <span>Filtros</span>
+            </button>
+            <div class="header-title">
+                <h1>AgroBroker Analytics</h1>
+                <p>Dashboard de Leads Agroindustriales</p>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <span class="last-update" id="lastUpdate">Cargando...</span>
+            <button class="header-btn" id="refreshData" aria-label="Refresh Data">
+                <span>🔄</span>
+                <span>Actualizar</span>
+            </button>
+            <!--button class="header-btn" id="darkModeToggle" aria-label="Toggle Dark Mode">
+                <span>🌙</span>
+            </button-->
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Filters Panel - Top Horizontal -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>🔍 Filtros Avanzados</h2>
+                <button class="close-sidebar" id="closeSidebar" aria-label="Close Filters">✕</button>
+            </div>
+
+            <div class="filters-grid">
+                <!-- Date Range Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">📅 Rango de Fechas</label>
+                    <input type="date" id="dateFrom" class="filter-input" placeholder="Desde">
+                    <input type="date" id="dateTo" class="filter-input" placeholder="Hasta" style="margin-top: 0.5rem;">
+
+                    <div class="filter-presets">
+                        <button class="preset-btn" id="preset-today">Hoy</button>
+                        <button class="preset-btn" id="preset-7days">7 días</button>
+                        <button class="preset-btn" id="preset-30days">30 días</button>
+                        <button class="preset-btn active" id="preset-all">Todo</button>
+                    </div>
+                </div>
+
+                <!-- Score Range Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">⭐ Rango de Score</label>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Mín: <strong id="scoreMinValue">1</strong></span>
+                        <span>Máx: <strong id="scoreMaxValue">10</strong></span>
+                    </div>
+                    <input type="range" id="scoreMin" min="1" max="10" value="1" class="filter-input"
+                        style="width: 100%;">
+                    <input type="range" id="scoreMax" min="1" max="10" value="10" class="filter-input"
+                        style="width: 100%; margin-top: 0.5rem;">
+                </div>
+
+                <!-- Location Filters -->
+                <div class="filter-group">
+                    <label class="filter-label">📍 Ubicación</label>
+                    <select id="filterCity" class="filter-select" multiple size="4">
+                        <option value="">Cargando ciudades...</option>
+                    </select>
+                </div>
+
+                <!-- Seniority Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">👔 Seniority</label>
+                    <div class="filter-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="filter-clevel" checked>
+                            C-Level
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="filter-director" checked>
+                            Director
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="filter-manager" checked>
+                            Manager
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="filter-coordinator" checked>
+                            Coordinator
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Data Completeness Filters -->
+                <div class="filter-group">
+                    <label class="filter-label">✅ Completitud</label>
+                    <div class="filter-checkboxes">
+                        <label class="checkbox-label">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="filter-email">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            Email
+                        </label>
+                        <label class="checkbox-label">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="filter-phone">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            Teléfono
+                        </label>
+                        <label class="checkbox-label">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="filter-complete">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            Completos
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="filter-group">
+                    <label class="filter-label">⚡ Acciones</label>
+                    <button class="btn-primary" id="applyFilters" style="width: 100%;">Aplicar</button>
+                    <button class="btn-secondary" id="resetFilters"
+                        style="width: 100%; margin-top: 0.5rem;">Resetear</button>
+                    <button class="btn-secondary" id="saveFilters" style="width: 100%; margin-top: 0.5rem;">💾
+                        Guardar</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center" style="padding: 4rem;">
+                <div class="spinner"></div>
+                <p style="margin-top: 1rem; color: #ffffff;">Cargando datos de Google Sheets...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden text-center" style="padding: 4rem;">
+                <p style="font-size: 3rem;">⚠️</p>
+                <h2 style="color: #ef4444; margin-bottom: 1rem;">Error al Cargar Datos</h2>
+                <p id="errorMessage" style="color: #ffffff;"></p>
+                <button class="btn-primary" onclick="location.reload()" style="margin-top: 1rem;">Reintentar</button>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" class="hidden">
+                <!-- KPI Grid - 8 Cards for Symmetry -->
+                <section class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header"><span class="kpi-label">Total de Leads</span></div>
+                        <div class="kpi-value" id="kpi-total-leads">0</div>
+                        <div class="kpi-subtitle">Leads en el sistema</div>
+                    </div>
+
+                    <div class="kpi-card success">
+                        <div class="kpi-header"><span class="kpi-label">Leads Profesionales</span></div>
+                        <div class="kpi-value" id="kpi-high-score">0</div>
+                        <div class="kpi-subtitle">Score igual o mayor a 8</div>
+                    </div>
+
+                    <div class="kpi-card info">
+                        <div class="kpi-header"><span class="kpi-label">Empresas Únicas</span></div>
+                        <div class="kpi-value" id="kpi-unique-companies">0</div>
+                        <div class="kpi-subtitle">Organizaciones identificadas</div>
+                    </div>
+
+                    <div class="kpi-card success">
+                        <div class="kpi-header"><span class="kpi-label">Tasa de Conversión</span></div>
+                        <div class="kpi-value" id="kpi-conversion-rate">0%</div>
+                        <div class="kpi-subtitle">Calidad High Score</div>
+                    </div>
+
+                    <div class="kpi-card warning">
+                        <div class="kpi-header"><span class="kpi-label">Score Promedio</span></div>
+                        <div class="kpi-value" id="kpi-avg-score">0</div>
+                        <div class="kpi-subtitle">Calidad general</div>
+                    </div>
+
+                    <div class="kpi-card info">
+                        <div class="kpi-header"><span class="kpi-label">Leads Hoy</span></div>
+                        <div class="kpi-value" id="kpi-leads-today">0</div>
+                        <div class="kpi-subtitle">Últimas 24 horas</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header"><span class="kpi-label">Cobertura Email</span></div>
+                        <div class="kpi-value" id="kpi-email-coverage">0%</div>
+                        <div class="kpi-subtitle">Leads con email</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header"><span class="kpi-label">Cobertura Teléfono</span></div>
+                        <div class="kpi-value" id="kpi-phone-coverage">0%</div>
+                        <div class="kpi-subtitle">Leads con teléfono</div>
+                    </div>
+                </section>
+
+                <!-- Charts Grid - 8 Charts for Symmetry -->
+                <section class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Distribución de Scores</h3>
+                                <p class="chart-subtitle">Frecuencia por nivel</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartScoreDistribution"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Leads por Fecha</h3>
+                                <p class="chart-subtitle">Evolución temporal</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartTemporalLeads"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Top 10 Ciudades</h3>
+                                <p class="chart-subtitle">Distribución urbana</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartTopCities"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Distribución por Estado</h3>
+                                <p class="chart-subtitle">Geografía regional</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartTopStates"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Top 10 Cargos</h3>
+                                <p class="chart-subtitle">Niveles jerárquicos</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartTopTitles"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Top 15 Empresas</h3>
+                                <p class="chart-subtitle">Volumen por organización</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartTopCompanies"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Score Promedio por Cargo</h3>
+                                <p class="chart-subtitle">Calidad por posición</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartScoreByTitle"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Embudo de Calificación</h3>
+                                <p class="chart-subtitle">Calidad de los leads</p>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="chartConversionFunnel"></canvas></div>
+                    </div>
+                </section>
+
+                <!-- Leads Table -->
+                <section class="table-section">
+                    <div class="table-header">
+                        <h2 class="table-title">Tabla de Leads</h2>
+                        <div class="table-controls">
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" id="searchLeads" placeholder="Buscar leads...">
+                            </div>
+                            <button class="header-btn" id="exportCSV" title="Exportar a CSV">
+                                <span>📥</span>
+                                <span>Exportar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="leads-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-column="fullName">Nombre</th>
+                                    <th class="sortable" data-column="company">Empresa</th>
+                                    <th class="sortable" data-column="title">Cargo</th>
+                                    <th class="sortable" data-column="city">Ubicación</th>
+                                    <th class="sortable" data-column="preScore">Score</th>
+                                    <th class="sortable" data-column="email">Email</th>
+                                    <th class="sortable" data-column="phone">Teléfono</th>
+                                    <th class="sortable" data-column="createdAt">Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leadsTableBody">
+                                <!-- Rows will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        <div class="pagination-info" id="paginationInfo">
+                            Mostrando 0-0 de 0 leads
+                        </div>
+                        <div class="pagination-controls">
+                            <select id="pageSize" class="page-size-select">
+                                <option value="10">10 por página</option>
+                                <option value="25" selected>25 por página</option>
+                                <option value="50">50 por página</option>
+                                <option value="100">100 por página</option>
+                            </select>
+                            <button class="pagination-btn" id="prevPage">← Anterior</button>
+                            <span id="currentPageNumber" style="padding: 0 1rem;">Página 1 de 1</span>
+                            <button class="pagination-btn" id="nextPage">Siguiente →</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- JavaScript Modules -->
+    <script src="assets/js/google-sheets.js"></script>
+    <script src="assets/js/data-processor.js"></script>
+    <script src="assets/js/charts.js"></script>
+    <script src="assets/js/filters.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+
+</html>
